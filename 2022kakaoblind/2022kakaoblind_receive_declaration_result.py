@@ -1,3 +1,5 @@
+# https://school.programmers.co.kr/learn/courses/30/lessons/92334
+
 def solution(id_list, report, k):
     """
     :param id_list: 이용자의 ID가 담긴 문자열 배열
