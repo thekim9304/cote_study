@@ -1,3 +1,5 @@
+# https://school.programmers.co.kr/learn/courses/30/lessons/92335
+
 def cvt_decimal_to_k_number(n, k):
     ret_base = ''
 
