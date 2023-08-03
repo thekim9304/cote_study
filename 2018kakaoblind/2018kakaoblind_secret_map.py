@@ -1,9 +1,5 @@
 # https://school.programmers.co.kr/learn/courses/30/lessons/17681
 
-<<<<<<< HEAD
-=======
-
->>>>>>> e539c95023c470090283af22452c86acc3ca5852
 def cvt_binary_lst(arr, n):
     lst = [[int(_a) for _a in format(a, 'b')] for a in arr]
 
@@ -23,11 +19,8 @@ def solution(n, arr1, arr2):
 
         res_str = ''.join(res_lst)
 
-<<<<<<< HEAD
-        answer.appㅎend(res_str)
-=======
         answer.append(res_str)
->>>>>>> e539c95023c470090283af22452c86acc3ca5852
+        answer.append(res_str)
 
     return answer
 
