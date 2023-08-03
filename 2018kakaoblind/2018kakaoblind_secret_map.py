@@ -19,7 +19,7 @@ def solution(n, arr1, arr2):
 
         res_str = ''.join(res_lst)
 
-        answer.append(res_str)
+        answer.appㅎend(res_str)
 
     return answer
 
