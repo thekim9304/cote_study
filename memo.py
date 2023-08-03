@@ -1,78 +1,68 @@
-def cvt_time_to_second(time):
-    hour, minute, second = time.split(':')
-    hour_second = int(hour) * 3600
-    minute_second = int(minute) * 60
-    second = int(second)
+from heapq import heappop, heappush
 
-    return hour_second + minute_second + second
+INF = int(1e9)
+graph = []
 
+def preprocess(n, pares):
+    global graph
 
-def cvt_second_to_time(second):
-    hour = second // 3600
-    second %= 3600
-    minute = second // 60
-    second %= 60
+    graph = [[] for _ in range(n + 1)]
 
-    return f"{hour:02}:{minute:02}:{second:02}"
+    for src, dst, wgt in pares:
+        graph[src].append([dst, wgt])
+        graph[dst].append([src, wgt])
 
+def dijkstra(src, dst):
+    global graph
 
-def make_cumulative_lst(play_time_second, logs):
-    cumulative_lst = [0] * (play_time_second + 1)
+    n = len(graph)
+    dist = [INF for _ in range(n)]
+    dist[src] = 0
 
-    for log in logs:
-        start, end = log.split('-')
-        start_second = cvt_time_to_second(start)
-        end_second = cvt_time_to_second(end)
+    pq = [[0, src]]
 
-        cumulative_lst[start_second] += 1
-        cumulative_lst[end_second] -= 1
+    while pq:
+        w, x = heappop(pq)
 
-    for idx in range(1, len(cumulative_lst)):
-        cumulative_lst[idx] += cumulative_lst[idx - 1]
+        if w > dist[x]:
+            continue
 
-    return cumulative_lst
+        for nx, nw in graph[x]:
+            nw += w
 
+            if nw < dist[nx]:
+                dist[nx] = nw
+                heappush(pq, [nw, nx])
 
-def search_adv_start_time(cumulative_lst, adv_time_second, play_time_second):
-    start = 0
-    adv_cnt = cnt = sum(cumulative_lst[:adv_time_second])
-    adv_str = 0
+    return dist[dst]
 
-    for end in range(adv_time_second, play_time_second):
-        cnt -= cumulative_lst[start]
-        start += 1
-        cnt += cumulative_lst[end]
+def solution(n, s, a, b, fares):
+    """
+    :param n: 지점의 개수
+    :param s: 출발지점
+    :param a: A의 도착지점
+    :param b: B의 도착지점
+    :param fares: 지점 사이의 예상 택시요금
+    :return: 두 사람이 s에서 출발해서 각각의 도착 지점까지 택시를 타고 간다고 가정할 때, 최저 예상 택시 요금
+    아예 합승하지 않고 각자 이동했을 때 더 낮으면 합승하지 않아도됨
+    """
+    preprocess(n, fares)
 
-        if cnt > adv_cnt:
-            adv_cnt = cnt
-            adv_str = start
+    cost = dijkstra(s, a) + dijkstra(s, b)
 
-    return cvt_second_to_time(adv_str)
+    for i in range(1, n+1):
+        if s != i:
+            cost = min(cost, dijkstra(s, i) + dijkstra(i, a) + dijkstra(i, b))
 
-
-def solution(play_time, adv_time, logs):
-    # cvt time to second
-    play_time_second = cvt_time_to_second(play_time)
-    adv_time_second = cvt_time_to_second(adv_time)
-
-    cumulative_lst = make_cumulative_lst(play_time_second, logs)
-
-    adv_start_time = search_adv_start_time(cumulative_lst, adv_time_second, play_time_second)
-
-    return adv_start_time
-
+    return cost
 
 
 if __name__ == "__main__":
     cases = [
-        {'play_time': "02:03:55", 'adv_time': "00:14:15",
-         'logs': ["01:20:15-01:45:14", "00:40:31-01:00:00", "00:25:50-00:48:29", "01:30:59-01:53:29",
-                  "01:37:44-02:02:30"]},
-        {'play_time': "99:59:59", 'adv_time': "25:00:00",
-         'logs': ["69:59:59-89:59:59", "01:00:00-21:00:00", "79:59:59-99:59:59", "11:00:00-31:00:00"]},
-        {'play_time': "50:00:00", 'adv_time': "50:00:00",
-         'logs': ["15:36:51-38:21:49", "10:14:18-15:36:51", "38:21:49-42:51:45"]},
+        {'n': 6, 's': 4, 'a': 6, 'b': 2, 'fares': [[4, 1, 10], [3, 5, 24], [5, 6, 2], [3, 1, 41], [5, 1, 24], [4, 6, 50], [2, 4, 66], [2, 3, 22], [1, 6, 25]]},
+        {'n': 7, 's': 3, 'a': 4, 'b': 1, 'fares': [[5, 7, 9], [4, 6, 4], [3, 6, 1], [3, 2, 3], [2, 1, 6]]},
+        {'n': 6, 's': 4, 'a': 5, 'b': 6, 'fares': [[2,6,6], [6,3,7], [4,6,7], [6,5,11], [2,5,12], [5,3,20], [2,4,8], [4,3,9]]},
     ]
 
     for case in cases:
-        print(solution(case['play_time'], case['adv_time'], case['logs']))
+        print(solution(case['n'], case['s'], case['a'], case['b'], case['fares']))

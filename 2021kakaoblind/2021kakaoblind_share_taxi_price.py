@@ -22,8 +22,8 @@ def dijkstra(src, dst):
     n = len(graph)
 
     dist = [INF for _ in range(n)]
-
     dist[src] = 0
+
     pq = [[0, src]]
 
     while pq:
